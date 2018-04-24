@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+
+  <title>The HTML5 Herald</title>
+  <meta name="description" content="">
+  <meta name="author" content="pakuyuya">
+</head>
+
+<body>
+<div>
+  <fieldset>
+    <input type="text" id="text" />
+    <button type="button" onclick="sendText()">Send</button>
+  </fieldset>
+  <textarea id="echo" style="width: 400px; height:80px;"></textarea>
+</div>
+</body>
+<script>
+'use strict';
+
+let connection = new WebSocket('ws://localhost:8080', ['echo-protocol']);
+
+connection.onopen = () => {
+  connection.send('onopen');
+};
+
+connection.onerror = (error) => {
+  echo(`WebSocket Error ${error}`);
+};
+
+connection.onmessage = (e) => {
+  echo(`Server: ${e.data}`);
+};
+
+function echo(text) {
+  document.getElementById('echo').value += text + '\r\n';
+}
+
+function sendText() {
+  if (connection.readyState !== WebSocket.OPEN) {
+    return;
+  }
+
+  let elText = document.getElementById('text');
+
+  let text = elText.value;
+  connection.send(text);
+
+  elText.value = '';
+}
+
+</script>
+</html>
