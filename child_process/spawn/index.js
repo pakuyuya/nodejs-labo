@@ -2,9 +2,22 @@
 const child_process = require('child_process')
 
 const start = async () => {
-    let proc = child_process.spawn('node', ['cho_span1s10times.js', 'test']);
+    let proc = child_process.spawn('node', ['echo_span1s10times.js', 'test']);
     proc.stdout.on('data', (data) => {
-      console.log('stdout: %s', data)
+        console.log(data.toString('utf-8'))
+    })
+
+    proc.stderr.on('data', (data) => {
+        console.log(data.toString('utf-8'))
+    })
+
+    proc.on('close', (code) => {
+      console.log(`exit ${code}`)
+    })
+        
+    let x = child_process.spawn('go', ['-version']);
+    x.stdout.on('data', (data) => {
+      console.log(data)
     })
 
     logRepeatedly('main', 10, 1000)
